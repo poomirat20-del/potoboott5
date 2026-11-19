@@ -69,6 +69,7 @@ export const EditorView: React.FC<EditorViewProps> = ({
 }) => {
   const layout = PHOTOBOOTH_LAYOUTS[layoutId];
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const stageOuterRef = useRef<HTMLDivElement>(null);
   const stageBoxRef = useRef<HTMLDivElement>(null);
 
   const [activeTab, setActiveTab] = useState<StudioTab>('frames');
@@ -85,8 +86,8 @@ export const EditorView: React.FC<EditorViewProps> = ({
   const [selectedTextUid, setSelectedTextUid] = useState<string | null>(null);
 
   const [stageSize, setStageSize] = useState<{ width: number; height: number }>({
-    width: layout.canvasWidth,
-    height: layout.canvasHeight,
+    width: Math.round(layout.canvasWidth * 0.45),
+    height: Math.round(layout.canvasHeight * 0.45),
   });
 
   const [snapGuide, setSnapGuide] = useState<{ x: boolean; y: boolean }>({
@@ -108,21 +109,31 @@ export const EditorView: React.FC<EditorViewProps> = ({
   const [qrPayload, setQrPayload] = useState<{ jpeg: string; png: string } | null>(null);
   const [printPng, setPrintPng] = useState<string | null>(null);
 
-  // Measure live canvas size for accurate pointer drag mapping
+  // Fit the photobooth canvas cleanly inside available iPad/mobile/desktop viewport
   useEffect(() => {
-    const el = stageBoxRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setStageSize({
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
-        });
-      }
-    });
-    observer.observe(el);
+    const outer = stageOuterRef.current;
+    if (!outer) return;
+
+    const updateFit = () => {
+      const style = window.getComputedStyle(outer);
+      const padX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+      const padY = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+      const availW = Math.max(160, outer.clientWidth - padX);
+      // Reserve ~28px below canvas for the subtle helper caption
+      const availH = Math.max(200, outer.clientHeight - padY - 32);
+
+      const scale = Math.min(availW / layout.canvasWidth, availH / layout.canvasHeight);
+      setStageSize({
+        width: Math.max(120, Math.floor(layout.canvasWidth * scale)),
+        height: Math.max(160, Math.floor(layout.canvasHeight * scale)),
+      });
+    };
+
+    updateFit();
+    const observer = new ResizeObserver(updateFit);
+    observer.observe(outer);
     return () => observer.disconnect();
-  }, []);
+  }, [layout.canvasWidth, layout.canvasHeight]);
 
   // Re-render live WYSIWYG canvas whenever any state changes
   useEffect(() => {
@@ -347,28 +358,27 @@ export const EditorView: React.FC<EditorViewProps> = ({
     });
   };
 
-  const aspectRatio = `${layout.canvasWidth} / ${layout.canvasHeight}`;
   const previewScale = stageSize.width / layout.canvasWidth;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 flex flex-col gap-4">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex flex-col gap-3 sm:gap-4">
       {/* Top Action Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
         <button
           type="button"
           onClick={onBackToCamera}
-          className="min-h-[44px] px-4 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-amber-500/50 text-slate-200 text-sm font-medium flex items-center gap-2 transition whitespace-nowrap"
+          className="min-h-[42px] px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-amber-500/50 text-slate-200 text-xs sm:text-sm font-medium flex items-center gap-2 transition whitespace-nowrap"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>ถ่ายรูปใหม่</span>
         </button>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             disabled={exportBusy}
             onClick={handleDownloadPng}
-            className="min-h-[44px] px-4 sm:px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-[0.98] disabled:opacity-60 text-slate-950 font-semibold text-sm flex items-center gap-2 shadow-lg shadow-amber-500/20 transition whitespace-nowrap"
+            className="min-h-[42px] px-3.5 sm:px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-[0.98] disabled:opacity-60 text-slate-950 font-semibold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-amber-500/20 transition whitespace-nowrap"
           >
             {savedToast ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
             <span>{savedToast ? 'บันทึกแล้ว!' : 'บันทึกรูป'}</span>
@@ -378,7 +388,7 @@ export const EditorView: React.FC<EditorViewProps> = ({
             type="button"
             disabled={exportBusy}
             onClick={handleOpenQR}
-            className="min-h-[44px] px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-amber-500/30 disabled:opacity-60 text-amber-100 font-medium text-sm flex items-center gap-2 transition whitespace-nowrap"
+            className="min-h-[42px] px-3.5 sm:px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-amber-500/30 disabled:opacity-60 text-amber-100 font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition whitespace-nowrap"
           >
             <QrCode className="w-4 h-4 text-amber-400" />
             <span>สแกน QR</span>
@@ -388,7 +398,7 @@ export const EditorView: React.FC<EditorViewProps> = ({
             type="button"
             disabled={exportBusy}
             onClick={handleOpenPrint}
-            className="min-h-[44px] px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-amber-500/30 disabled:opacity-60 text-amber-100 font-medium text-sm flex items-center gap-2 transition whitespace-nowrap"
+            className="min-h-[42px] px-3.5 sm:px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-amber-500/30 disabled:opacity-60 text-amber-100 font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition whitespace-nowrap"
           >
             <Printer className="w-4 h-4 text-amber-400" />
             <span>พิมพ์รูป</span>
@@ -396,11 +406,12 @@ export const EditorView: React.FC<EditorViewProps> = ({
         </div>
       </div>
 
-      {/* Main Studio Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_420px] gap-6 items-start">
-        {/* Left: Live WYSIWYG Canvas Stage */}
+      {/* Main Studio Grid (2 columns from iPad md: 768px+) */}
+      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_340px] lg:grid-cols-[minmax(0,1fr)_410px] gap-4 sm:gap-5 items-start">
+        {/* Left: Live WYSIWYG Canvas Stage fitted exactly to viewport */}
         <div
-          className="bg-slate-900/50 border border-slate-800/90 rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center min-h-[420px] lg:min-h-[calc(100vh-160px)]"
+          ref={stageOuterRef}
+          className="bg-slate-900/50 border border-slate-800/90 rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center h-[52dvh] min-h-[290px] md:h-[calc(100dvh-148px)]"
           onClick={() => {
             setSelectedStickerUid(null);
             setSelectedTextUid(null);
@@ -408,8 +419,11 @@ export const EditorView: React.FC<EditorViewProps> = ({
         >
           <div
             ref={stageBoxRef}
-            style={{ aspectRatio }}
-            className="relative max-h-[66vh] lg:max-h-[calc(100vh-200px)] w-auto max-w-full shadow-2xl rounded-lg overflow-hidden select-none touch-none"
+            style={{
+              width: `${stageSize.width}px`,
+              height: `${stageSize.height}px`,
+            }}
+            className="relative shadow-2xl rounded-lg overflow-hidden select-none touch-none shrink-0"
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
@@ -481,13 +495,13 @@ export const EditorView: React.FC<EditorViewProps> = ({
             })}
           </div>
 
-          <p className="mt-3 text-xs text-slate-400 text-center">
-            แตะและลากสติกเกอร์หรือข้อความบนภาพเพื่อย้ายตำแหน่งได้อิสระ · ภาพที่บันทึกและสั่งพิมพ์ตรงตามหน้าจอ 100%
+          <p className="mt-2 text-[11px] sm:text-xs text-slate-400 text-center truncate max-w-full">
+            แตะและลากสติกเกอร์หรือข้อความบนภาพเพื่อย้ายตำแหน่งได้อิสระ
           </p>
         </div>
 
         {/* Right: Studio Controls Panel */}
-        <div className="bg-slate-900/85 border border-slate-800 rounded-2xl overflow-hidden flex flex-col max-h-[680px] lg:max-h-[calc(100vh-160px)]">
+        <div className="bg-slate-900/85 border border-slate-800 rounded-2xl overflow-hidden flex flex-col max-h-[560px] md:h-[calc(100dvh-148px)] md:max-h-none">
           {/* 4 Studio Tabs */}
           <div className="grid grid-cols-4 border-b border-slate-800 bg-slate-950/60 p-1.5 gap-1">
             {(

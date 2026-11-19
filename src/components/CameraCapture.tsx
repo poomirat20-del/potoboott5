@@ -225,22 +225,22 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6 flex flex-col gap-5">
+    <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex flex-col gap-3 sm:gap-4">
       {/* Top Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
         <button
           type="button"
           onClick={() => {
             stopCamera();
             onBack();
           }}
-          className="min-h-[44px] px-4 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-amber-500/50 text-slate-200 text-sm font-medium flex items-center gap-2 transition whitespace-nowrap"
+          className="min-h-[42px] px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-amber-500/50 text-slate-200 text-xs sm:text-sm font-medium flex items-center gap-2 transition whitespace-nowrap"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>เปลี่ยนเลย์เอาต์</span>
         </button>
 
-        <div className="flex items-center gap-2 text-sm text-amber-200 font-medium">
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-amber-200 font-medium">
           <span>{layout.name}</span>
           <span aria-hidden="true">·</span>
           <span className="tabular-nums text-amber-400">
@@ -256,7 +256,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
                 type="button"
                 disabled={isCapturingSequence}
                 onClick={() => setCountdownSec(sec)}
-                className={`min-h-[36px] px-3 rounded-lg text-xs font-medium transition whitespace-nowrap ${
+                className={`min-h-[34px] px-2.5 sm:px-3 rounded-lg text-xs font-medium transition whitespace-nowrap ${
                   countdownSec === sec
                     ? 'bg-amber-500 text-slate-950 font-semibold'
                     : 'text-slate-300 hover:text-amber-200'
@@ -269,20 +269,23 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
         </div>
       </div>
 
-      {/* Main Camera & Filmstrip Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] gap-6 items-start">
+      {/* Main Camera & Filmstrip Grid (2 columns from iPad md: 768px+) */}
+      <div className="grid grid-cols-1 md:grid-cols-[1.35fr_1fr] lg:grid-cols-[1.45fr_1fr] gap-4 sm:gap-5 items-start">
         {/* Live Camera Viewport */}
-        <div className="flex flex-col gap-4">
-          <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-slate-950 border border-amber-500/25 shadow-2xl">
+        <div className="flex flex-col gap-3">
+          <div
+            style={{ maxWidth: 'min(100%, calc((100dvh - 220px) * 4 / 3))' }}
+            className="relative w-full mx-auto aspect-[4/3] rounded-2xl overflow-hidden bg-slate-950 border border-amber-500/25 shadow-2xl"
+          >
             {cameraError ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center gap-4">
-                <Camera className="w-12 h-12 text-amber-400/70" />
-                <p className="text-sm text-slate-300 max-w-md">{cameraError}</p>
-                <div className="flex flex-wrap gap-3 justify-center">
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-5 text-center gap-3">
+                <Camera className="w-10 h-10 text-amber-400/70" />
+                <p className="text-xs sm:text-sm text-slate-300 max-w-md">{cameraError}</p>
+                <div className="flex flex-wrap gap-2.5 justify-center">
                   <button
                     type="button"
                     onClick={startCamera}
-                    className="min-h-[44px] px-4 py-2 rounded-xl bg-slate-800 text-amber-200 text-sm font-medium flex items-center gap-2"
+                    className="min-h-[42px] px-3.5 py-2 rounded-xl bg-slate-800 text-amber-200 text-xs sm:text-sm font-medium flex items-center gap-2"
                   >
                     <RefreshCw className="w-4 h-4" />
                     <span>ลองเปิดกล้องอีกครั้ง</span>
@@ -290,7 +293,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="min-h-[44px] px-4 py-2 rounded-xl bg-amber-500 text-slate-950 text-sm font-semibold flex items-center gap-2"
+                    className="min-h-[42px] px-3.5 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs sm:text-sm font-semibold flex items-center gap-2"
                   >
                     <ImagePlus className="w-4 h-4" />
                     <span>เลือกรูปจากเครื่อง</span>
@@ -310,7 +313,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
             {/* Countdown Big Overlay */}
             {activeCountdown !== null && (
               <div className="absolute inset-0 flex items-center justify-center bg-slate-950/35 pointer-events-none">
-                <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-amber-500/90 text-slate-950 flex items-center justify-center text-6xl sm:text-7xl font-bold shadow-2xl tabular-nums">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-amber-500/90 text-slate-950 flex items-center justify-center text-5xl sm:text-6xl font-bold shadow-2xl tabular-nums">
                   {activeCountdown}
                 </div>
               </div>
@@ -323,7 +326,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
           </div>
 
           {/* Camera Action Controls */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-2.5">
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -333,7 +336,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
                   setFacingMode(nextMode);
                   setMirror(nextMode === 'user');
                 }}
-                className="min-h-[44px] px-4 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-amber-500/50 text-slate-200 text-sm font-medium flex items-center gap-2 transition whitespace-nowrap"
+                className="min-h-[42px] px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-amber-500/50 text-slate-200 text-xs sm:text-sm font-medium flex items-center gap-1.5 transition whitespace-nowrap"
               >
                 <SwitchCamera className="w-4 h-4 text-amber-400" />
                 <span>{facingMode === 'user' ? 'กล้องหน้า' : 'กล้องหลัง'}</span>
@@ -343,7 +346,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
                 type="button"
                 disabled={isCapturingSequence}
                 onClick={() => setMirror((m) => !m)}
-                className={`min-h-[44px] px-4 py-2 rounded-xl border text-sm font-medium flex items-center gap-2 transition whitespace-nowrap ${
+                className={`min-h-[42px] px-3.5 py-2 rounded-xl border text-xs sm:text-sm font-medium flex items-center gap-1.5 transition whitespace-nowrap ${
                   mirror
                     ? 'bg-amber-500/15 border-amber-400/60 text-amber-200'
                     : 'bg-slate-900 border-slate-700/80 text-slate-300'
@@ -357,7 +360,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
                 type="button"
                 disabled={isCapturingSequence}
                 onClick={() => fileInputRef.current?.click()}
-                className="min-h-[44px] px-4 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-amber-500/50 text-slate-200 text-sm font-medium flex items-center gap-2 transition whitespace-nowrap"
+                className="min-h-[42px] px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-amber-500/50 text-slate-200 text-xs sm:text-sm font-medium flex items-center gap-1.5 transition whitespace-nowrap"
               >
                 <ImagePlus className="w-4 h-4 text-amber-400" />
                 <span className="hidden sm:inline">อัปโหลดรูป</span>
@@ -369,7 +372,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
                 type="button"
                 disabled={isCapturingSequence || Boolean(cameraError)}
                 onClick={handleStartSequence}
-                className="min-h-[48px] flex-1 sm:flex-initial px-7 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 active:scale-[0.98] text-slate-950 font-bold text-base flex items-center justify-center gap-2.5 shadow-lg shadow-amber-500/20 transition whitespace-nowrap"
+                className="min-h-[46px] flex-1 sm:flex-initial px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 active:scale-[0.98] text-slate-950 font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition whitespace-nowrap"
               >
                 <Camera className="w-5 h-5" />
                 <span>
@@ -384,7 +387,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
               <button
                 type="button"
                 onClick={handleProceed}
-                className="min-h-[48px] flex-1 sm:flex-initial px-7 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-950 font-bold text-base flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition whitespace-nowrap"
+                className="min-h-[46px] flex-1 sm:flex-initial px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-950 font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition whitespace-nowrap"
               >
                 <span>ไปตกแต่งภาพ</span>
                 <ArrowRight className="w-5 h-5" />
@@ -393,16 +396,16 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
           </div>
         </div>
 
-        {/* Captured Shots Tray */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col gap-4">
+        {/* Captured Shots Tray - Fitted cleanly for iPad portrait & landscape */}
+        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 sm:p-4 flex flex-col gap-3 md:max-h-[calc(100dvh-148px)]">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-semibold text-amber-100">ภาพที่ถ่ายไว้</h3>
+            <h3 className="text-sm sm:text-base font-semibold text-amber-100">ภาพที่ถ่ายไว้</h3>
             {capturedCount > 0 && (
               <button
                 type="button"
                 disabled={isCapturingSequence}
                 onClick={handleResetAll}
-                className="min-h-[36px] px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-amber-300 hover:bg-slate-800 flex items-center gap-1.5 transition whitespace-nowrap"
+                className="min-h-[34px] px-2.5 py-1 rounded-lg text-xs font-medium text-slate-300 hover:text-amber-300 hover:bg-slate-800 flex items-center gap-1.5 transition whitespace-nowrap"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>ถ่ายใหม่ทั้งหมด</span>
@@ -411,12 +414,12 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
           </div>
 
           <div
-            className={`grid gap-3 ${
+            className={`grid gap-2.5 overflow-y-auto studio-scroll ${
               layout.shotCount === 1
-                ? 'grid-cols-1'
+                ? 'grid-cols-1 max-w-[320px] w-full mx-auto'
                 : layout.shotCount === 4
                   ? 'grid-cols-2'
-                  : 'grid-cols-3 lg:grid-cols-1'
+                  : 'grid-cols-3 md:grid-cols-2'
             }`}
           >
             {photos.map((photo, idx) => (
@@ -435,9 +438,9 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
                       type="button"
                       disabled={isCapturingSequence}
                       onClick={() => handleRetakeSlot(idx)}
-                      className="absolute bottom-2 right-2 min-h-[36px] px-3 py-1.5 rounded-lg bg-slate-950/85 hover:bg-amber-500 hover:text-slate-950 text-amber-200 text-xs font-medium flex items-center gap-1.5 border border-amber-500/30 transition whitespace-nowrap"
+                      className="absolute bottom-1.5 right-1.5 min-h-[30px] px-2 py-1 rounded-lg bg-slate-950/85 hover:bg-amber-500 hover:text-slate-950 text-amber-200 text-[11px] font-medium flex items-center gap-1 border border-amber-500/30 transition whitespace-nowrap"
                     >
-                      <RotateCcw className="w-3.5 h-3.5" />
+                      <RotateCcw className="w-3 h-3" />
                       <span>ถ่ายซ่อม</span>
                     </button>
                   </>
@@ -454,7 +457,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
             <button
               type="button"
               onClick={handleProceed}
-              className="w-full min-h-[48px] py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-base flex items-center justify-center gap-2 transition whitespace-nowrap"
+              className="w-full min-h-[46px] py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition whitespace-nowrap shrink-0"
             >
               <span>ตกแต่งกรอบและสติกเกอร์</span>
               <ArrowRight className="w-5 h-5" />
